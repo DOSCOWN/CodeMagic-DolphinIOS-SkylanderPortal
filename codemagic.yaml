@@ -17,7 +17,7 @@ workflows:
       - name: Install dependancies
         script: |
           brew install cmake ninja bartycrouch
-          pip3 install polib
+          /Applications/Xcode.app/Contents/Developer/usr/bin/python3 -m pip install polib
 
       - name: Clean & Archive (no signing)
         script: |
