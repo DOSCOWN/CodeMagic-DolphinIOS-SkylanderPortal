@@ -1,14 +1,13 @@
 workflows:
   dolphin-ios-skylander:
-    name: DolphinIOS
+    name: DolphinIOS (Unsigned IPA)
     instance_type: mac_mini_m2
     max_build_duration: 120
     environment:
       vars:
         XCODE_PROJECT: "Source/iOS/App/DolphiniOS.xcodeproj"
         XCODE_CONFIGURATION: "Release (Non-Jailbroken)"
-        XCODE_SCHEME: "DiOS (NJB)"  # temporaire, pour l'instant
-        APPLE_TEAM_ID: "RXJZMJ4VJS"
+        XCODE_SCHEME: "DiOS (NJB)"
     scripts:
       - name: List Xcode schemes
         script: |
@@ -19,46 +18,25 @@ workflows:
         script: |
           brew install cmake ninja bartycrouch
 
-      - name: Clean & Build
+      - name: Clean & Archive (no signing)
         script: |
           xcodebuild clean archive \
             -project "$XCODE_PROJECT" \
             -scheme "$XCODE_SCHEME" \
             -configuration "$XCODE_CONFIGURATION" \
             PRODUCT_BUNDLE_IDENTIFIER="com.kkmeleon.dolphinios" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
             -sdk iphoneos \
             -archivePath $CM_BUILD_DIR/DolphiniOS.xcarchive
 
-      - name: Inspect Archive
+      - name: Package Unsigned IPA
         script: |
-          echo "Archive content:"
-          ls -R $CM_BUILD_DIR/DolphiniOS.xcarchive
-
-      - name: Create ExportOptions
-        script: |
-          cat > ExportOptions.plist <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>method</key>
-              <string>development</string>
-              <key>teamID</key>
-              <string>$APPLE_TEAM_ID</string>
-              <key>signingStyle</key>
-              <string>automatic</string>
-              <key>compileBitcode</key>
-              <false/>
-          </dict>
-          </plist>
-          EOF
-
-      - name: Export IPA
-        script: |
-          xcodebuild -exportArchive \
-            -archivePath $CM_BUILD_DIR/DolphiniOS.xcarchive \
-            -exportOptionsPlist ExportOptions.plist \
-            -exportPath $CM_BUILD_DIR/output
+          mkdir -p $CM_BUILD_DIR/output
+          xcrun -sdk iphoneos PackageApplication \
+            -v $CM_BUILD_DIR/DolphiniOS.xcarchive/Products/Applications/*.app \
+            -o $CM_BUILD_DIR/output/DolphiniOS-unsigned.ipa
 
     artifacts:
       - $CM_BUILD_DIR/output/*.ipa
