@@ -12,19 +12,27 @@ workflows:
     scripts:
       - name: List Xcode schemes
         script: |
-          echo "Listing schemes for DolphiniOS.xcodeproj"
+          echo "Listing schemes for $XCODE_PROJECT"
           xcodebuild -list -project "$XCODE_PROJECT"
+
       - name: Install dependancies
         script: |
           brew install cmake ninja bartycrouch
+
       - name: Clean & Build
         script: |
           xcodebuild clean archive \
             -project "$XCODE_PROJECT" \
             -scheme "$XCODE_SCHEME" \
             -configuration "$XCODE_CONFIGURATION" \
+            PRODUCT_BUNDLE_IDENTIFIER="com.kkmeleon.dolphinios" \
             -sdk iphoneos \
             -archivePath $CM_BUILD_DIR/DolphiniOS.xcarchive
+
+      - name: Inspect Archive
+        script: |
+          echo "Archive content:"
+          ls -R $CM_BUILD_DIR/DolphiniOS.xcarchive
 
       - name: Create ExportOptions
         script: |
@@ -38,19 +46,23 @@ workflows:
               <key>teamID</key>
               <string>$APPLE_TEAM_ID</string>
               <key>signingStyle</key>
-              <string>manual</string>
+              <string>automatic</string>
+              <key>compileBitcode</key>
+              <false/>
           </dict>
           </plist>
           EOF
-      - name: Export IPA
 
+      - name: Export IPA
         script: |
           xcodebuild -exportArchive \
             -archivePath $CM_BUILD_DIR/DolphiniOS.xcarchive \
             -exportOptionsPlist ExportOptions.plist \
             -exportPath $CM_BUILD_DIR/output
+
     artifacts:
       - $CM_BUILD_DIR/output/*.ipa
+
     publishing:
       email:
         recipients:
