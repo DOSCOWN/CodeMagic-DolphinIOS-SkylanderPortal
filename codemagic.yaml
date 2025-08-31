@@ -20,6 +20,7 @@ workflows:
 
       - name: Clean & Archive (no signing)
         script: |
+          export CMAKE_POLICY_VERSION_MINIMUM=3.5
           xcodebuild clean archive \
             -project "$XCODE_PROJECT" \
             -scheme "$XCODE_SCHEME" \
