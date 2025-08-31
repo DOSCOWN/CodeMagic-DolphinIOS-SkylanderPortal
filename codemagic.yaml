@@ -35,10 +35,10 @@ workflows:
 
       - name: Package Unsigned IPA
         script: |
-          mkdir -p $CM_BUILD_DIR/output
-          xcrun -sdk iphoneos PackageApplication \
-            -v $CM_BUILD_DIR/DolphiniOS.xcarchive/Products/Applications/*.app \
-            -o $CM_BUILD_DIR/output/DolphiniOS-unsigned.ipa
+          mkdir -p $CM_BUILD_DIR/output/Payload
+          cp -r $CM_BUILD_DIR/DolphiniOS.xcarchive/Products/Applications/*.app $CM_BUILD_DIR/output/Payload/
+          cd $CM_BUILD_DIR/output
+          zip -r DolphiniOS-unsigned.ipa Payload
 
     artifacts:
       - $CM_BUILD_DIR/output/*.ipa
