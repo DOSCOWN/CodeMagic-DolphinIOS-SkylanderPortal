@@ -6,8 +6,12 @@ workflows:
     environment:
       vars:
         XCODE_PROJECT: "Source/iOS/App/DolphiniOS.xcodeproj"
-        XCODE_SCHEME: "DolphiniOS"
+        XCODE_SCHEME: "DolphiniOS"  # temporaire, pour l'instant
     scripts:
+      - name: List Xcode schemes
+        script: |
+          echo "Listing schemes for DolphiniOS.xcodeproj"
+          xcodebuild -list -project "$XCODE_PROJECT"
       - name: Clean & Build
         script: |
           xcodebuild clean archive \
