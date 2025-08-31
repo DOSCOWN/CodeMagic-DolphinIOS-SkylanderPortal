@@ -5,8 +5,7 @@ workflows:
     max_build_duration: 120
     environment:
       vars:
-        XCODE_PATH: "Source/iOS/App/"
-        XCODE_PROJECT: "DolphiniOS.xcodeproj"
+        XCODE_PROJECT: "Source/iOS/App/DolphiniOS.xcodeproj"
         XCODE_CONFIGURATION: "Release (Non-Jailbroken)"
         XCODE_SCHEME: "DiOS (NJB)"  # temporaire, pour l'instant
         APPLE_TEAM_ID: "RXJZMJ4VJS"
@@ -17,7 +16,6 @@ workflows:
           xcodebuild -list -project "$XCODE_PROJECT"
       - name: Install dependancies
         script: |
-          cd "$XCODE_PATH"
           brew install cmake ninja bartycrouch
       - name: Clean & Build
         script: |
