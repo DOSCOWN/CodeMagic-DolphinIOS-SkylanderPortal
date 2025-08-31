@@ -5,7 +5,7 @@ workflows:
     max_build_duration: 120
     environment:
       vars:
-        XCODE_WORKSPACE: "DolphiniOS.xcodeproj"
+        XCODE_PROJECT: "DolphiniOS.xcodeproj"
         XCODE_SCHEME: "DolphiniOS"
     scripts:
       - name: Clean & Build
