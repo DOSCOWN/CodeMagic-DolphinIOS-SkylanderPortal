@@ -6,7 +6,7 @@ workflows:
     environment:
       vars:
         XCODE_PROJECT: "Source/iOS/App/DolphiniOS.xcodeproj"
-        XCODE_SCHEME: "DolphiniOS"  # temporaire, pour l'instant
+        XCODE_SCHEME: "DiOS (NJB)"  # temporaire, pour l'instant
     scripts:
       - name: List Xcode schemes
         script: |
