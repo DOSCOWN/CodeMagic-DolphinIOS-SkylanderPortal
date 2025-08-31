@@ -5,24 +5,47 @@ workflows:
     max_build_duration: 120
     environment:
       vars:
-        XCODE_PROJECT: "Source/iOS/App/DolphiniOS.xcodeproj"
+        XCODE_PATH: "Source/iOS/App/"
+        XCODE_PROJECT: "DolphiniOS.xcodeproj"
+        XCODE_CONFIGURATION: "Release (Non-Jailbroken)"
         XCODE_SCHEME: "DiOS (NJB)"  # temporaire, pour l'instant
-        BUNDLE_IDENTIFIER: "com.kkmeleon.DolphiniOS"
+        APPLE_TEAM_ID: "RXJZMJ4VJS"
     scripts:
       - name: List Xcode schemes
         script: |
           echo "Listing schemes for DolphiniOS.xcodeproj"
           xcodebuild -list -project "$XCODE_PROJECT"
+      - name: Install dependancies
+        script: |
+          cd "$XCODE_PATH"
+          brew install cmake ninja bartycrouch
       - name: Clean & Build
         script: |
           xcodebuild clean archive \
             -project "$XCODE_PROJECT" \
             -scheme "$XCODE_SCHEME" \
-            -configuration Release \
+            -configuration "$XCODE_CONFIGURATION" \
             -sdk iphoneos \
-            PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_IDENTIFIER \
             -archivePath $CM_BUILD_DIR/DolphiniOS.xcarchive
+
+      - name: Create ExportOptions
+        script: |
+          cat > ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>development</string>
+              <key>teamID</key>
+              <string>$APPLE_TEAM_ID</string>
+              <key>signingStyle</key>
+              <string>manual</string>
+          </dict>
+          </plist>
+          EOF
       - name: Export IPA
+
         script: |
           xcodebuild -exportArchive \
             -archivePath $CM_BUILD_DIR/DolphiniOS.xcarchive \
