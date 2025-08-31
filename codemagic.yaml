@@ -8,10 +8,6 @@ workflows:
         XCODE_WORKSPACE: "dolphin-ios.xcworkspace"
         XCODE_SCHEME: "DolphiniOS"
     scripts:
-      - name: Install dependencies
-        script: |
-          brew install cocoapods || true
-          pod install
       - name: Build and archive iOS
         script: |
           xcodebuild clean archive \
